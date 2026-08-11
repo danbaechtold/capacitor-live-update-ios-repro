@@ -1,0 +1,14 @@
+{
+  "appId": "com.example.liveupdaterepro",
+  "appName": "LU Repro",
+  "webDir": "dist",
+  "plugins": {
+    "LiveUpdate": {
+      "appId": "YOUR_CAPAWESOME_APP_ID",
+      "defaultChannel": "Production",
+      "readyTimeout": 10000,
+      "autoDeleteBundles": true,
+      "autoBlockRolledBackBundles": true
+    }
+  }
+}
