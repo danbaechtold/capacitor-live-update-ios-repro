@@ -1,6 +1,6 @@
 # capacitor-live-update-ios-repro
 
-Minimal reproduction (based on [capawesome-team/.capacitor-app](https://github.com/capawesome-team/.capacitor-app)) for two `@capawesome/capacitor-live-update` 8.3.0 reports on **iOS** with Capacitor 8:
+Minimal reproduction (based on [capawesome-team/.capacitor-app](https://github.com/capawesome-team/.capacitor-app)) for two `@capawesome/capacitor-live-update` reports on **iOS** with Capacitor 8 (originally observed on plugin 8.3.0; now tracking **8.4.0** per maintainer request):
 
 1. **`reload()` does not apply the next bundle** — the webview reboots the *previous* bundle; a force-quit + relaunch applies it fine ([capawesome-team/capacitor-plugins#969](https://github.com/capawesome-team/capacitor-plugins/issues/969)).
 2. **manifest→manifest partial update never becomes active** — silent failure, device stays on the previous bundle forever; the identical dist uploaded as `zip` installs fine ([capawesome-team/capacitor-plugins#970](https://github.com/capawesome-team/capacitor-plugins/issues/970)).
@@ -25,6 +25,8 @@ which makes the iOS WebView origin `capacitor://app.example.com` instead of the 
 | B | `app.example.com` | reload() fails like the production app? |
 
 Capacitor versions are now **pinned exactly** (`@capacitor/core`/`ios`/`cli` 8.4.2) to rule out install-time drift. (For the record: `CapacitorBridge.setServerBasePath`, `CAPBridgeViewController` and `WebViewAssetHandler` are byte-identical between 8.4.2 and 8.5.0, so version drift alone does not explain the discrepancy.)
+
+**Plugin 8.4.0 (released 2026-08-12):** [capawesome-team/capacitor-plugins#971](https://github.com/capawesome-team/capacitor-plugins/pull/971) hardens the iOS download path (validate HTTP status so error bodies are no longer written into bundles as files, ignore `URLCache` for the deterministic request URLs, overwrite leftover files from failed attempts) — three iOS-only silent-failure modes that Android already guarded against, which is consistent with Bug 2 appearing on iOS only. `reload()` and `setServerBasePath` are unchanged in 8.4.0, so Bug 1 testing is unaffected by the bump. This repo now pins 8.4.0.
 
 ## Setup
 
@@ -81,6 +83,6 @@ Note the production-app dist was a ~4.4 MB SPA with ~180 files (vs. a handful he
 
 ## Environment
 
-- `@capawesome/capacitor-live-update` 8.3.0
+- `@capawesome/capacitor-live-update` 8.4.0 (bugs originally observed on 8.3.0)
 - `@capacitor/core` / `@capacitor/ios` / `@capacitor/cli` 8.4.2 (pinned)
 - Production-app observations: two physical iPhones (one fully deleted + reinstalled during the investigation — behavior unchanged); Android (Pixel 7a) applies bundles via `reload()` correctly.
