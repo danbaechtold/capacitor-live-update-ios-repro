@@ -1,3 +1,4 @@
+import { WebView } from '@capacitor/core'
 import { LiveUpdate } from '@capawesome/capacitor-live-update'
 
 // Change this marker before each upload so bundle switches are visible on screen.
@@ -17,7 +18,22 @@ async function refreshState () {
   }
 }
 
+// The native serverBasePath tells us which bundle directory the bridge config
+// points at - after a failed reload() this discriminates between "config was
+// never updated (silent guard)" and "config updated but stale content served".
+async function logServerBasePath (label) {
+  try {
+    const { path } = await WebView.getServerBasePath()
+    log(label + ' serverBasePath=...' + path.split('/').slice(-3).join('/'))
+  } catch (e) {
+    log(label + ' getServerBasePath failed: ' + e)
+  }
+}
+
 el('marker').textContent = MARKER
+log('origin=' + location.origin)
+log('ua=' + navigator.userAgent)
+logServerBasePath('boot')
 
 // ready() confirms the boot so readyTimeout does not roll back (mirrors real apps)
 LiveUpdate.ready()
@@ -43,6 +59,7 @@ el('btn-reload').onclick = async () => {
     // if reload really applies the next bundle, this line never logs -
     // the webview reboots into the new bundle
     log('reload() returned')
+    await logServerBasePath('post-reload')
   } catch (e) {
     log('reload() failed: ' + e)
   }

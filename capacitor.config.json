@@ -2,6 +2,9 @@
   "appId": "com.example.liveupdaterepro",
   "appName": "LU Repro",
   "webDir": "dist",
+  "server": {
+    "hostname": "app.example.com"
+  },
   "plugins": {
     "LiveUpdate": {
       "appId": "YOUR_CAPAWESOME_APP_ID",
