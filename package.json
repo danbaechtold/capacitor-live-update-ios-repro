@@ -5,6 +5,7 @@
   "scripts": {
     "start": "vite",
     "build": "vite build",
+    "build:padded": "vite build && node scripts/pad-dist.mjs",
     "preview": "vite preview"
   },
   "dependencies": {

@@ -71,7 +71,7 @@ If reload() fails, the `post-reload serverBasePath=` log line is the key evidenc
 
 **Reported behavior (production app, iOS):** the app stays on `BUNDLE v3` forever. No error, no event, nothing in the UI or dashboard. Check `getBlockedBundles()`: with `autoBlockRolledBackBundles: true`, a single failed/rolled-back install permanently blocklists the bundle — after which `sync()` silently returns `nextBundleId: null` (only a native-console log line mentions the block). A blocklisted bundle is indistinguishable from "no update available" for both the app and the operator.
 
-Note the production-app dist was a ~4.4 MB SPA with ~180 files (vs. a handful here) — if the delta path fails only at that scale, this repro may need a padded dist to show it.
+Note the production-app dist was a ~4.4 MB SPA with ~180 files (vs. a handful here). Use `npm run build:padded` instead of `npm run build` for the manifest tests: it adds ~180 deterministic filler files (~4 MB) to `dist/`, so a re-upload after a marker change is a true partial update at production scale (2-3 changed files out of ~180).
 
 5. Upload the identical `v4` dist as zip:
    ```bash
