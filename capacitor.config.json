@@ -7,7 +7,7 @@
   },
   "plugins": {
     "LiveUpdate": {
-      "appId": "YOUR_CAPAWESOME_APP_ID",
+      "appId": "c057fe79-a005-4ddf-bfb5-7488de7f094c",
       "defaultChannel": "Production",
       "readyTimeout": 10000,
       "autoDeleteBundles": true,
