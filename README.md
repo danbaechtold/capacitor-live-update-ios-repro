@@ -7,6 +7,15 @@ Minimal reproduction (based on [capawesome-team/.capacitor-app](https://github.c
 
 The app shows a large **marker** (`BUNDLE v1` in [src/js/app.js](src/js/app.js)), the current bundle id, and buttons for `sync()`, `reload()`, `getCurrentBundle()`, `getBlockedBundles()`, with an on-screen log. On boot and after a (failed) `reload()` it also logs the WebView **origin** and the native **`serverBasePath`** (`WebView.getServerBasePath()`), so a failed reload discriminates between "bridge config was never updated" and "config updated but stale content served".
 
+## Outcome (2026-08-18) — both mysteries resolved
+
+Full re-test on the **same physical iPhone** (iOS 16.7.16) that produced the original failures, with plugin **8.4.0**, Capacitor pinned 8.4.2, `server.hostname` set, production-scale dist (~183 files):
+
+- **Bug 1 (`reload()`): could not be reproduced anymore** — in-place reload worked every time, both built-in → bundle and bundle → bundle. Issue #969 closed as no-longer-reproducible; the August failures likely involved app-flow timing and/or fallout from the Bug-2 corruption era below.
+- **Bug 2 (manifest): root cause found, and it's server-side** — Capawesome Cloud **intermittently fails to register `capawesome-live-update-manifest.json`** for manifest uploads (6 of 11 identical uploads permanently 404 the manifest href while all other files serve 200; any CLI version). Plugin **8.3.0** masked this catastrophically: the 404 JSON body was saved *as* the manifest file → decode failure → `sync()` failed silently on every launch, forever ("device silently stuck"). Plugin **8.4.0** (PR [#971](https://github.com/capawesome-team/capacitor-plugins/pull/971)) fails loudly instead. With a properly registered manifest, both full and **delta** manifest installs work fine on 8.4.0 — verified on device.
+
+Details and bundle IDs in the issue threads.
+
 ## Status (2026-08-12)
 
 The behaviors above were observed **in the production app the reports came from** (two physical iPhones, multiple days, reproducible at will at the time; Android unaffected). The maintainer could **not** reproduce them with this repro app ([video on #969](https://github.com/capawesome-team/capacitor-plugins/issues/969)).
